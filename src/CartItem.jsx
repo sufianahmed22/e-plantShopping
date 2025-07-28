@@ -1,68 +1,56 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, updateQuantity } from './CartSlice';
-import './CartItem.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeItem, updateQuantity } from '../redux/CartSlice'; // Adjust path
 
-const CartItem = ({ onContinueShopping }) => {
-  const cart = useSelector(state => state.cart.items);
+const CartItem = () => {
   const dispatch = useDispatch();
+  const cartItems = useSelector(state => state.cart.items);
 
-  // Calculate total amount for all products in the cart
-  const calculateTotalAmount = () => {
- 
+  const handleQuantityChange = (name, quantity) => {
+    if (quantity > 0) {
+      dispatch(updateQuantity({ name, quantity }));
+    }
   };
 
-  const handleContinueShopping = (e) => {
-   
-  };
-
-
-
-  const handleIncrement = (item) => {
-  };
-
-  const handleDecrement = (item) => {
-   
-  };
-
-  const handleRemove = (item) => {
-  };
-
-  // Calculate total cost based on quantity for an item
-  const calculateTotalCost = (item) => {
+  const handleRemove = (name) => {
+    dispatch(removeItem(name));
   };
 
   return (
-    <div className="cart-container">
-      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
-      <div>
-        {cart.map(item => (
-          <div className="cart-item" key={item.name}>
-            <img className="cart-item-image" src={item.image} alt={item.name} />
-            <div className="cart-item-details">
-              <div className="cart-item-name">{item.name}</div>
-              <div className="cart-item-cost">{item.cost}</div>
-              <div className="cart-item-quantity">
-                <button className="cart-item-button cart-item-button-dec" onClick={() => handleDecrement(item)}>-</button>
-                <span className="cart-item-quantity-value">{item.quantity}</span>
-                <button className="cart-item-button cart-item-button-inc" onClick={() => handleIncrement(item)}>+</button>
+    <div className="cart-items p-4">
+      <h2 className="text-xl font-bold mb-4">Shopping Cart</h2>
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        cartItems.map((item, idx) => (
+          <div className="cart-item flex items-center justify-between mb-4 border-b pb-2" key={idx}>
+            <div className="flex items-center gap-4">
+              <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
+              <div>
+                <div className="font-semibold">{item.name}</div>
+                <div className="text-sm text-gray-600">${item.cost}</div>
               </div>
-              <div className="cart-item-total">Total: ${calculateTotalCost(item)}</div>
-              <button className="cart-item-delete" onClick={() => handleRemove(item)}>Delete</button>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                className="w-16 border p-1 text-center"
+                value={item.quantity}
+                min={1}
+                onChange={(e) => handleQuantityChange(item.name, parseInt(e.target.value))}
+              />
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded"
+                onClick={() => handleRemove(item.name)}
+              >
+                Remove
+              </button>
             </div>
           </div>
-        ))}
-      </div>
-      <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'></div>
-      <div className="continue_shopping_btn">
-        <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
-        <br />
-        <button className="get-started-button1">Checkout</button>
-      </div>
+        ))
+      )}
     </div>
   );
 };
 
 export default CartItem;
-
-
