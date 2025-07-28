@@ -28,17 +28,23 @@ const ProductList = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
 
-  const isInCart = (id) => cartItems.some((item) => item.id === id);
+  const calculateTotalQuantity = () => {
+    return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
+  };
 
   const handleAddToCart = (product) => {
-    if (!isInCart(product.id)) {
-      dispatch(addItem({ ...product, quantity: 1 }));
-    }
+    dispatch(addItem({ ...product, quantity: 1 }));
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Plant Shop</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Plant Shop</h1>
+        <span className="bg-purple-500 text-white px-4 py-2 rounded-full">
+          Cart Items: {calculateTotalQuantity()}
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map((product) => (
           <div key={product.id} className="border rounded-lg p-4 shadow-md bg-white">
@@ -47,14 +53,9 @@ const ProductList = () => {
             <p>${product.price}</p>
             <button
               onClick={() => handleAddToCart(product)}
-              disabled={isInCart(product.id)}
-              className={`mt-4 px-4 py-2 rounded ${
-                isInCart(product.id)
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600'
-              } text-white`}
+              className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded"
             >
-              {isInCart(product.id) ? 'Added to Cart' : 'Add to Cart'}
+              Add to Cart
             </button>
           </div>
         ))}
