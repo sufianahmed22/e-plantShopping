@@ -1,71 +1,64 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addItem } from '../redux/CartSlice'; // Adjust the path based on your file structure
+// src/components/ProductList.jsx
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice';
+
+const products = [
+  {
+    id: 1,
+    name: 'Spider Plant',
+    price: 12,
+    image: '/images/spider-plant.jpg',
+  },
+  {
+    id: 2,
+    name: 'Peace Lily',
+    price: 18,
+    image: '/images/peace-lily.jpg',
+  },
+  {
+    id: 3,
+    name: 'Snake Plant',
+    price: 15,
+    image: '/images/snake-plant.jpg',
+  },
+];
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const [addedToCart, setAddedToCart] = useState({});
+  const cartItems = useSelector((state) => state.cart.items);
 
-  const plantsArray = [
-    {
-      category: "Indoor Plants",
-      plants: [
-        {
-          name: "Fiddle Leaf Fig",
-          image: "https://via.placeholder.com/150",
-          description: "A beautiful indoor plant.",
-          cost: 25
-        },
-        {
-          name: "Snake Plant",
-          image: "https://via.placeholder.com/150",
-          description: "Great for air purification.",
-          cost: 18
-        }
-      ]
-    },
-    {
-      category: "Outdoor Plants",
-      plants: [
-        {
-          name: "Rose",
-          image: "https://via.placeholder.com/150",
-          description: "Classic garden rose.",
-          cost: 15
-        }
-      ]
+  const isInCart = (id) => cartItems.some((item) => item.id === id);
+
+  const handleAddToCart = (product) => {
+    if (!isInCart(product.id)) {
+      dispatch(addItem({ ...product, quantity: 1 }));
     }
-  ];
-
-  const handleAddToCart = (plant) => {
-    dispatch(addItem(plant));
-    setAddedToCart(prev => ({ ...prev, [plant.name]: true }));
   };
 
   return (
-    <div className="product-grid">
-      {plantsArray.map((category, index) => (
-        <div key={index}>
-          <h1 className="text-2xl font-bold mb-4">{category.category}</h1>
-          <div className="product-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {category.plants.map((plant, idx) => (
-              <div className="product-card border p-4 rounded shadow" key={idx}>
-                <img className="product-image w-full h-48 object-cover" src={plant.image} alt={plant.name} />
-                <div className="product-title font-bold mt-2">{plant.name}</div>
-                <div className="product-description text-sm text-gray-600">{plant.description}</div>
-                <div className="product-cost text-green-600 font-semibold">${plant.cost}</div>
-                <button
-                  className="product-button mt-2 bg-green-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                  onClick={() => handleAddToCart(plant)}
-                  disabled={addedToCart[plant.name]}
-                >
-                  {addedToCart[plant.name] ? 'Added' : 'Add to Cart'}
-                </button>
-              </div>
-            ))}
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Plant Shop</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <div key={product.id} className="border rounded-lg p-4 shadow-md bg-white">
+            <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-4" />
+            <h2 className="text-xl font-semibold">{product.name}</h2>
+            <p>${product.price}</p>
+            <button
+              onClick={() => handleAddToCart(product)}
+              disabled={isInCart(product.id)}
+              className={`mt-4 px-4 py-2 rounded ${
+                isInCart(product.id)
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600'
+              } text-white`}
+            >
+              {isInCart(product.id) ? 'Added to Cart' : 'Add to Cart'}
+            </button>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
