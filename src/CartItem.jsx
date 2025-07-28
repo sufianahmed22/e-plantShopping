@@ -1,55 +1,27 @@
-// src/components/CartItem.jsx
+// src/CartItem.jsx
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateQuantity, removeItem } from './CartSlice';
+import { useDispatch } from 'react-redux';
+import { removeItem, updateQuantity } from './CartSlice';
 
-const CartItem = () => {
+const CartItem = ({ item }) => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-
-  const handleQuantityChange = (name, newQuantity) => {
-    if (newQuantity > 0) {
-      dispatch(updateQuantity({ name, quantity: newQuantity }));
-    }
-  };
-
-  const handleRemove = (name) => {
-    dispatch(removeItem(name));
-  };
 
   return (
-    <div className="text-white p-6">
-      <h2 className="text-2xl font-bold mb-4">Cart Items</h2>
-      {cartItems.length === 0 ? (
-        <p className="text-gray-400">Your cart is empty.</p>
-      ) : (
-        <div className="space-y-6">
-          {cartItems.map((item, index) => (
-            <div key={index} className="flex items-center justify-between bg-gray-800 p-4 rounded">
-              <img src={item.image} alt={item.name} className="h-16 w-16 object-cover" />
-              <div className="flex-1 ml-4">
-                <h3 className="text-lg font-semibold">{item.name}</h3>
-                <p className="text-green-400">${item.cost.toFixed(2)}</p>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => handleQuantityChange(item.name, parseInt(e.target.value))}
-                  className="w-16 text-black px-2 py-1 rounded"
-                />
-                <button
-                  onClick={() => handleRemove(item.name)}
-                  className="ml-4 bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+    <div className="flex items-center gap-6 p-4 border-b border-gray-300">
+      <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded" />
+      <div className="flex-1">
+        <h2 className="text-lg font-bold">{item.name}</h2>
+        <p className="text-gray-600">Price: ${item.price.toFixed(2)}</p>
+        <div className="flex items-center gap-2 mt-2">
+          <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))} disabled={item.quantity <= 1} className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">-</button>
+          <span>{item.quantity}</span>
+          <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))} className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">+</button>
         </div>
-      )}
+        <p className="mt-2 font-semibold">Total: ${(item.price * item.quantity).toFixed(2)}</p>
+        <button onClick={() => dispatch(removeItem(item.id))} className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+          Delete
+        </button>
+      </div>
     </div>
   );
 };
