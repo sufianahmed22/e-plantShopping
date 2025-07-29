@@ -1,4 +1,4 @@
-// src/CartSlice.jsx
+// 📁 CartSlice.jsx
 import { createSlice } from '@reduxjs/toolkit';
 
 const cartSlice = createSlice({
@@ -8,25 +8,24 @@ const cartSlice = createSlice({
   },
   reducers: {
     addItem: (state, action) => {
-      const existing = state.items.find((item) => item.id === action.payload.id);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
+      const exists = state.items.find(item => item.id === action.payload.id);
+      if (!exists) {
         state.items.push({ ...action.payload, quantity: 1 });
       }
     },
     removeItem: (state, action) => {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter(item => item.id !== action.payload);
     },
-    updateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const item = state.items.find((item) => item.id === id);
-      if (item && quantity > 0) {
-        item.quantity = quantity;
-      }
+    increment: (state, action) => {
+      const item = state.items.find(i => i.id === action.payload);
+      if (item) item.quantity++;
+    },
+    decrement: (state, action) => {
+      const item = state.items.find(i => i.id === action.payload);
+      if (item && item.quantity > 1) item.quantity--;
     },
   },
 });
 
-export const { addItem, removeItem, updateQuantity } = cartSlice.actions;
+export const { addItem, removeItem, increment, decrement } = cartSlice.actions;
 export default cartSlice.reducer;

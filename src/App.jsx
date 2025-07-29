@@ -1,37 +1,17 @@
-// src/App.jsx
-import React, { useState } from 'react';
-import './App.css';
-import AboutUs from './AboutUs';
-import ProductList from './ProductList';
+// App.jsx
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Landing from './components/Landing';
+import ProductList from './components/ProductList';
+import ShoppingCart from './components/ShoppingCart';
 
 function App() {
-  const [showProductList, setShowProductList] = useState(false);
-
-  const handleGetStartedClick = () => setShowProductList(true);
-  const handleHomeClick = () => setShowProductList(false);
-
   return (
-    <div className="app-container">
-      <div className={`landing-page ${showProductList ? 'fade-out' : ''}`}>
-        <div className="background-image"></div>
-        <div className="content">
-          <div className="landing_content">
-            <h1>Welcome To Paradise Nursery</h1>
-            <div className="divider"></div>
-            <p>Where Green Meets Serenity</p>
-            <button className="get-started-button" onClick={handleGetStartedClick}>
-              Get Started
-            </button>
-          </div>
-          <div className="aboutus_container">
-            <AboutUs />
-          </div>
-        </div>
-      </div>
-      <div className={`product-list-container ${showProductList ? 'visible' : ''}`}>
-        <ProductList onHomeClick={handleHomeClick} />
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/products" element={<ProductList />} />
+      <Route path="/cart" element={<ShoppingCart />} />
+    </Routes>
   );
 }
 
